@@ -21,7 +21,7 @@ export function FragmentWeb({data}: Props) {
         navigator.clipboard.writeText(data.sandboxUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
-    }
+    };
 
     return (
         <div className="flex flex-col w-full h-full">

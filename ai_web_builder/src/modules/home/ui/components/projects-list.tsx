@@ -26,7 +26,6 @@ export const ProjectsList = () => {
                     <div className="col-span-full text-center">
                         <p className="text-sm text-muted-foreground">
                             No projects found
-                            No projects found
                         </p>
                     </div>
                 )}

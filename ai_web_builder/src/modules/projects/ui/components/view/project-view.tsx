@@ -6,13 +6,13 @@ import {
     ResizablePanelGroup
 }
 from '@/components/ui/resizable';
-import { MessagesContainer } from "./components/messages-container";
+import { MessagesContainer } from "../messages-container";
 import { Suspense } from "react";
 import { useState } from 'react';
 import {Fragment} from '@/generated/prisma'
 
-import { ProjectHeader } from './components/project-header';
-import { FragmentWeb } from './components/fragment-web'
+import { ProjectHeader } from '../project-header';
+import { FragmentWeb } from '../fragment-web'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CodeIcon, CrownIcon, EyeIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -47,7 +47,7 @@ export const ProjectView = ({projectId} : Props) => {
                     </Suspense>
                 </ResizablePanel>
 
-                <ResizableHandle withHandle />
+                <ResizableHandle className="hover:bg-primary transition-colors" />
 
                 <ResizablePanel
                     defaultSize={65}

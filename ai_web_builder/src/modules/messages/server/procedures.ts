@@ -3,6 +3,7 @@ import z from "zod";
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/db";
 import { TRPCError } from "@trpc/server";
+import { consumeCredits } from "@/lib/usage";
 
 export const messagesRouter = createTRPCRouter({
     getMany: protectedProcedure
@@ -48,6 +49,20 @@ export const messagesRouter = createTRPCRouter({
         if (!existingProject) {
             throw new TRPCError({code: "NOT_FOUND", message:"Project not found."})
         } //does not allow anyone to create a message in other person's project -> protect before triggering background jobs
+
+
+        try {
+            await consumeCredits();
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new TRPCError({code: "BAD_REQUEST", message: "Something went wrong"});
+            } else {
+                throw new TRPCError({
+                    code: "TOO_MANY_REQUESTS",
+                    message: "You have run out of credits"
+                });
+            }
+        }
 
         //create new message in the database
         const createdMessage = await prisma.message.create({

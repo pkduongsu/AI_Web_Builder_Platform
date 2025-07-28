@@ -17,7 +17,7 @@ export const ProjectsList = () => {
     if (!user) return null;
 
     return (
-        <div className="w-full bg:white dark:bg-sidebar rounded-xl p-8 border flex flex-col gap-y-6 sm:gap-y-4">
+        <div className="w-full bg-white dark:bg-sidebar rounded-xl p-8 border flex flex-col gap-y-6 sm:gap-y-4">
             <h2 className="text-2xl font-semibold">
                 {user?.firstName}&apos;s Saved Projects
             </h2>
@@ -25,6 +25,7 @@ export const ProjectsList = () => {
                 {projects?.length === 0 && (
                     <div className="col-span-full text-center">
                         <p className="text-sm text-muted-foreground">
+                            No projects found
                             No projects found
                         </p>
                     </div>

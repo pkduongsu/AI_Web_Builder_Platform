@@ -62,7 +62,7 @@ export const messagesRouter = createTRPCRouter({
                     message: "You have run out of credits"
                 });
             }
-        }
+        };
 
         //create new message in the database
         const createdMessage = await prisma.message.create({

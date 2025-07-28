@@ -1,19 +1,23 @@
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
+import { protectedProcedure,createTRPCRouter} from "@/trpc/init";
 import z from "zod";
 import { inngest } from "@/inngest/client";
 import { prisma } from "@/lib/db";
+import { TRPCError } from "@trpc/server";
 
 export const messagesRouter = createTRPCRouter({
-    getMany: baseProcedure
+    getMany: protectedProcedure
         .input(
             z.object({
                 projectId: z.string().min(1, {message: "Project ID is required"}),
             }),
         )
-        .query(async ({input}) => {
+        .query(async ({input, ctx}) => {
             const messages = await prisma.message.findMany({
                 where: {
                     projectId: input.projectId,
+                    project: {
+                        userId: ctx.auth.userId,
+                    },
                 },
                 orderBy: {
                     updatedAt: "asc", //first message should be User, then asisstant
@@ -25,7 +29,7 @@ export const messagesRouter = createTRPCRouter({
             return messages;
         }),
 
-    create: baseProcedure
+    create: protectedProcedure
      .input(
         z.object({
             value: z.string().min(1, {message: "Message is required"})
@@ -33,7 +37,18 @@ export const messagesRouter = createTRPCRouter({
             projectId: z.string().min(1, {message: "Project ID is required"}),
         }),
      )
-     .mutation(async ({ input }) => {
+     .mutation(async ({ input, ctx}) => {
+        const existingProject = await prisma.project.findUnique({
+            where:{
+                id: input.projectId,
+                userId: ctx.auth.userId,
+            },
+        });
+
+        if (!existingProject) {
+            throw new TRPCError({code: "NOT_FOUND", message:"Project not found."})
+        } //does not allow anyone to create a message in other person's project -> protect before triggering background jobs
+
         //create new message in the database
         const createdMessage = await prisma.message.create({
             data: {

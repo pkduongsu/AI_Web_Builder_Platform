@@ -16,6 +16,7 @@ import {Form, FormField } from "@/components/ui/form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { PROJECT_TEMPLATES } from "./constants";
+import { useClerk } from "@clerk/nextjs";
 
 const formSchema = z.object({
      value: z.string().min(1, {message: "Message is required"})
@@ -33,6 +34,7 @@ export const ProjectForm = () => {
     const router = useRouter();
     const trpc = useTRPC();
     const queryClient = useQueryClient();
+    const clerk = useClerk();
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         await createProject.mutateAsync({
@@ -49,6 +51,9 @@ export const ProjectForm = () => {
             // TODO: Invalidate usage status
         },
         onError: (error) => {
+            if (error?.message === "Not authenticated") {
+                clerk.openSignIn();
+            }
             toast.error(error.message);
         }
     }))

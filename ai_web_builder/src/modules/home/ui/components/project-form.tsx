@@ -48,13 +48,19 @@ export const ProjectForm = () => {
                 trpc.projects.getMany.queryOptions()
             );
             router.push(`/projects/${data.id}`)
-            // TODO: Invalidate usage status
+            queryClient.invalidateQueries(
+                trpc.usage.status.queryOptions()
+            );
         },
         onError: (error) => {
             if (error?.message === "Not authenticated") {
                 clerk.openSignIn();
             }
             toast.error(error.message);
+
+            if (error.data?.code === "TOO_MANY_REQUESTS") {
+                router.push('/pricing')
+            }
         }
     }))
     

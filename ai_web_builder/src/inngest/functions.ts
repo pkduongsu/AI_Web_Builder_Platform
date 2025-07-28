@@ -7,6 +7,7 @@ import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/prompt";
 import { lastAssistantTextMessageContent } from "./utils";
 import { prisma } from "@/lib/db";
 import { parseAgentOutput } from "@/lib/utils";
+import { SANDBOX_TIMEOUT } from "./types";
 
 
 interface AgentState {
@@ -20,6 +21,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("web_builder-nextjs-test");
+      await sandbox.setTimeout(SANDBOX_TIMEOUT); //10 minutes sandbox timeout
       return sandbox.sandboxId;
     });
 
@@ -34,6 +36,7 @@ export const codeAgentFunction = inngest.createFunction(
         orderBy: {
           createdAt: "desc" //change to asc if ai doesn't understand what is the primary message/goal and latest messages
         },
+        take: 5, //limit the number of messages to 5
       });
 
       for (const message of messages) {
@@ -44,7 +47,7 @@ export const codeAgentFunction = inngest.createFunction(
         })
       }
 
-      return formattedMessages;
+      return formattedMessages.reverse();
     });
     
     const state = createState<AgentState>(

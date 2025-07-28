@@ -19,7 +19,14 @@ interface UserMessageProps{
     content: string;
 }
 
-interface AssistantMessageProps extends Omit<MessageCardProps, 'role'> {}
+interface AssistantMessageProps {
+    content: string;
+    fragment?: Fragment | null;
+    createdAt: Date;
+    isActiveFragment: boolean;
+    onFragmentClick: (fragment: Fragment) => void;
+    type: MessageType;
+}
 
 interface FragmentCardProps {
     fragment: Fragment,
@@ -81,7 +88,6 @@ export const AssistantMessage = ({
             type === "ERROR" && "text-red-700 dark:text-red-500"
         )}>
             <div className="flex items-center gap-2 pl-2 mb-2">
-                {/* TODO: Add app logo */}
                 <Image 
                     src="/avatar.png"
                     alt='Kim'

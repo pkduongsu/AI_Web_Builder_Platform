@@ -19,7 +19,7 @@ const Page = () => {
           Ask me to build something...
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground text-center">
-          Create websites by chatting with AI
+          Create websites by chatting with Kode AI
         </p>
         <div className="max-w-3xl mx-auto w-full">
           <ProjectForm/>
